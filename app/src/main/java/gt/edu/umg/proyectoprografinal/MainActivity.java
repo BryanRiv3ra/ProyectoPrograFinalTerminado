@@ -1,8 +1,10 @@
 package gt.edu.umg.proyectoprografinal;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -43,7 +45,18 @@ public class MainActivity extends AppCompatActivity {
         // Solicitar permisos de cámara y ubicación
         solicitarPermisos();
     }
-
+    public String getRealPathFromURI(Context context, Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String filePath = cursor.getString(columnIndex);
+            cursor.close();
+            return filePath;
+        }
+        return null;
+    }
     private void solicitarPermisos() {
         // Verifica permisos de cámara
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -167,5 +180,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Error al guardar la ubicación", Toast.LENGTH_SHORT).show();
         }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        dbHelper.close();  // Cierra la base de datos aquí
     }
 }

@@ -41,14 +41,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put("latitude", latitude);
         values.put("longitude", longitude);
         long id = db.insert("photos", null, values);
-        db.close(); // Cierra la base de datos
+        // db.close(); // Elimina esta línea
         return id;
     }
 
     public long insertLocation(ContentValues values) {
-        SQLiteDatabase db = this.getWritableDatabase(); // Aquí es donde se utiliza getWritableDatabase
+        SQLiteDatabase db = this.getWritableDatabase();
         long id = db.insert("locations", null, values);
-        db.close(); // Cierra la base de datos
+        // db.close(); // Elimina esta línea
         return id;
     }
 }
