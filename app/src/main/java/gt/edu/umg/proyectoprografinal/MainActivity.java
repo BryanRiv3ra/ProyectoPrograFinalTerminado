@@ -39,7 +39,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Inicializa el cliente de ubicación
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 2000);
+        } else {
+            // Si ya tienes permiso, puedes abrir la cámara
+            Button ButtonCamara = findViewById(R.id.buttonCamara);
+            ButtonCamara.setOnClickListener(v -> abrirCamara());
+        }
         // Solicitar permisos de ubicación
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
@@ -108,13 +114,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+        if (requestCode == 2000) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido, puedes obtener la ubicación
-                obtenerUbicacion();
+                // Permiso concedido, puedes abrir la cámara
+                abrirCamara();
             } else {
                 // Permiso denegado, informa al usuario
-                Toast.makeText(this, "Permiso de ubicación denegado. La aplicación no podrá acceder a tu ubicación.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
             }
         }
     }
