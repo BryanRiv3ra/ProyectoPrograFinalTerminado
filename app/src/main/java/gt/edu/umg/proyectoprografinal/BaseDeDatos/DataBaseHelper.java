@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "photos.db";
@@ -15,27 +16,39 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE photos (id INTEGER PRIMARY KEY, image_path TEXT, latitude REAL, longitude REAL)";
-        db.execSQL(CREATE_TABLE);
+        // Registro de depuración
+        Log.d("DataBaseHelper", "Creando la base de datos");
+
+        String CREATE_TABLE_PHOTOS = "CREATE TABLE photos (id INTEGER PRIMARY KEY AUTOINCREMENT, image_path TEXT, latitude REAL, longitude REAL)";
+        db.execSQL(CREATE_TABLE_PHOTOS);
+
+        String CREATE_TABLE_LOCATIONS = "CREATE TABLE locations (id INTEGER PRIMARY KEY AUTOINCREMENT, latitude REAL, longitude REAL)";
+        db.execSQL(CREATE_TABLE_LOCATIONS);
     }
+
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS photos");
+        db.execSQL("DROP TABLE IF EXISTS locations");
+        onCreate(db);
     }
 
-    public void insertPhotoData(String imagePath, double latitude, double longitude) {
+    public long insertPhotoData(String imagePath, double latitude, double longitude) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("image_path", imagePath);
         values.put("latitude", latitude);
         values.put("longitude", longitude);
-        db.insert("photos", null, values);
-        db.close();
-
+        long id = db.insert("photos", null, values);
+        db.close(); // Cierra la base de datos
+        return id;
     }
+
     public long insertLocation(ContentValues values) {
         SQLiteDatabase db = this.getWritableDatabase(); // Aquí es donde se utiliza getWritableDatabase
-        return db.insert("locations", null, values);
+        long id = db.insert("locations", null, values);
+        db.close(); // Cierra la base de datos
+        return id;
     }
 }

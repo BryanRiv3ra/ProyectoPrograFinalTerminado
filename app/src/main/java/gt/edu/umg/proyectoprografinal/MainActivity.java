@@ -1,4 +1,5 @@
 package gt.edu.umg.proyectoprografinal;
+
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,7 +17,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -39,14 +39,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Inicializa el cliente de ubicación
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Solicitar permisos de cámara y ubicación
+        solicitarPermisos();
+    }
+
+    private void solicitarPermisos() {
+        // Verifica permisos de cámara
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 2000);
-        } else {
-            // Si ya tienes permiso, puedes abrir la cámara
-            Button ButtonCamara = findViewById(R.id.buttonCamara);
-            ButtonCamara.setOnClickListener(v -> abrirCamara());
         }
-        // Solicitar permisos de ubicación
+
+        // Verifica permisos de ubicación
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         } else {
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
             obtenerUbicacion();
         }
 
-        // Configura el botón de la cámara
+        // Configura el botón de la cámara después de los permisos
         Button ButtonCamara = findViewById(R.id.buttonCamara);
         ButtonCamara.setOnClickListener(v -> abrirCamara());
     }
@@ -90,10 +94,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Captura de imagen cancelada", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void getLastLocationAndSavePhoto(String imagePath) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Solicita los permisos si no están concedidos
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
             return;
         }
 
@@ -111,19 +116,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 2000) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido, puedes abrir la cámara
-                abrirCamara();
-            } else {
-                // Permiso denegado, informa al usuario
-                Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
-            }
+        switch (requestCode) {
+            case 2000: // Permiso de cámara
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    abrirCamara(); // Abre la cámara si se concede el permiso
+                } else {
+                    Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case LOCATION_PERMISSION_REQUEST_CODE: // Permiso de ubicación
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    obtenerUbicacion(); // Obtén ubicación si se concede el permiso
+                } else {
+                    Toast.makeText(this, "Permiso de ubicación denegado", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
+
     private void obtenerUbicacion() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.getLastLocation()
@@ -139,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
                     });
         }
     }
+
     private void guardarUbicacion(double latitude, double longitude) {
         // Crear un objeto ContentValues para almacenar los datos
         ContentValues values = new ContentValues();
@@ -153,6 +168,4 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error al guardar la ubicación", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 }
