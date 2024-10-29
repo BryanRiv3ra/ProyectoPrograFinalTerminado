@@ -1,6 +1,7 @@
 package gt.edu.umg.proyectoprografinal;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -36,7 +37,7 @@ import java.util.Map;
 import gt.edu.umg.proyectoprografinal.BaseDeDatos.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 2;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
 
     private Uri photoUri;
@@ -64,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
         descriptionEditText = findViewById(R.id.descriptionEditText);
         typeSpinner = findViewById(R.id.typeSpinner);
         severitySpinner = findViewById(R.id.severitySpinner);
+
+        Button btnOpenLastLocation = findViewById(R.id.buttonMaps);
+        btnOpenLastLocation.setOnClickListener(v -> AbrirUltimaUbicacion());
 
         Button captureButton = findViewById(R.id.captureButton);
         captureButton.setOnClickListener(v -> capturePhoto());
@@ -268,12 +272,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void AbrirUltimaUbicacion() {
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        Location location = dbHelper.getLastSavedLocation();
 
+        if (location != null) {
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
 
+            // Crear la URI para Google Maps usando un enlace HTTPS
+            String googleMapsUri = String.format("https://www.google.com/maps/?q=%f,%f",
+                    latitude, longitude);
 
+            // Crear el Intent para abrir Google Maps
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(googleMapsUri));
+
+            // Verificar si hay alguna aplicación que puede manejar el Intent
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(this, "No hay ninguna aplicación que pueda abrir mapas.", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "No hay una ubicación registrada.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 
 
 
 }
+
+
+
+
+
+
