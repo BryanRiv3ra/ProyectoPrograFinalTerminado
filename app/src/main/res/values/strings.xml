@@ -1,3 +1,32 @@
 <resources>
-    <string name="app_name">ProyectoPrograFinal</string>
+    <string-array name="incident_types">
+        <item>Accidente de tráfico</item>
+        <item>Daño en infraestructura</item>
+        <item>Problema ambiental</item>
+        <item>Problema de seguridad</item>
+        <item>Problema de servicios públicos</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string-array name="severity_levels">
+        <item>Baja</item>
+        <item>Media</item>
+        <item>Alta</item>
+        <item>Crítica</item>
+    </string-array>
+
+
+    <string name="app_name">Reporte de Incidencias</string>
+    <!-- Otros strings para la aplicación -->
+    <string name="title_activity_main">Reportar Incidente</string>
+    <string name="camera_button">Tomar Foto</string>
+    <string name="submit_button">Enviar Reporte</string>
+    <string name="view_reports_button">Ver Reportes</string>
+    <string name="description_hint">Descripción del incidente</string>
+    <string name="incident_type_label">Tipo de Incidente</string>
+    <string name="severity_label">Severidad</string>
+    <string name="location_permission_denied">Se requiere permiso de ubicación</string>
+    <string name="camera_permission_denied">Se requiere permiso de cámara</string>
+    <string name="error_saving_incident">Error al guardar el incidente</string>
+    <string name="success_saving_incident">Incidente reportado exitosamente</string>
 </resources>
