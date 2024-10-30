@@ -8,10 +8,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "incidentes.db";
@@ -46,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_LATITUDE + " REAL, "
                 + COLUMN_LONGITUDE + " REAL, "
                 + COLUMN_ADDRESS + " TEXT, "
-                + COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP"
+                + COLUMN_TIMESTAMP + " TEXT"  // Almacenará la fecha y hora en la zona horaria local
                 + ")";
 
         db.execSQL(CREATE_INCIDENTS_TABLE);
@@ -72,6 +76,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_LONGITUDE, longitude);
         values.put(COLUMN_ADDRESS, address);
 
+        // Obtén la fecha y hora en la zona horaria local
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        dateFormat.setTimeZone(TimeZone.getDefault());
+        String localDateTime = dateFormat.format(new Date());
+
+        values.put(COLUMN_TIMESTAMP, localDateTime);
+
         return db.insert(TABLE_INCIDENTS, null, values);
     }
 
@@ -89,6 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.update(TABLE_INCIDENTS, values, COLUMN_ID + " = ?",
                 new String[]{String.valueOf(id)}) > 0;
     }
+
     // Método para obtener la última ubicación guardada
     @SuppressLint("Range")
     public Location getLastSavedLocation() {
@@ -137,6 +149,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return incidents;
     }
+
     public boolean deleteIncident(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         int rowsAffected = db.delete(TABLE_INCIDENTS,

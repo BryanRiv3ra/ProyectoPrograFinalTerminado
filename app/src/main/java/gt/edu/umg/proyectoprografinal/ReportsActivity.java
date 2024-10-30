@@ -278,21 +278,4 @@ public class ReportsActivity extends AppCompatActivity {
             Toast.makeText(this, "Error al actualizar el estado", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

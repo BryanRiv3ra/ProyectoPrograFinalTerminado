@@ -77,9 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
         Button viewReportsButton = findViewById(R.id.viewReportsButton);
         viewReportsButton.setOnClickListener(v -> startActivity(new Intent(this, ReportsActivity.class)));
-
-        Button testButton = findViewById(R.id.testLocationButton);
-        testButton.setOnClickListener(v -> verificarUbicacion());
     }
 
     private void setupSpinners() {
@@ -297,11 +294,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No hay una ubicación registrada.", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
-
 }
 
 
